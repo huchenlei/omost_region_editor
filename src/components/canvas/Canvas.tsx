@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { Stage, Layer } from 'react-konva';
+import { Group, Layer, Stage } from 'react-konva';
 
 import SelectionBox from './SelectionBox';
 import Konva from 'konva';
@@ -32,27 +32,29 @@ const Canvas: React.FC<CanvasProps> = ({ width, height, regions }) => {
         width={width}
         height={height}
       >
-        {regions.map((region, index) => {
-          const initialBox = regionToSelectionBox(region, index);
-          return <Layer key={index}>
-            <SelectionBox
-              box={initialBox}
-              activeBoxIndex={activeBoxIndex}
-              onTransform={(newProps: SelectionBox) => {
-                const newBoxes = selectionBoxes.slice();
-                newBoxes[index] = newProps;
-                setSelectionBoxes(newBoxes);
-              }}
-              onClick={() => {
-                if (activeBoxIndex === index) {
-                  setActiveBoxIndex(-1);
-                } else {
-                  setActiveBoxIndex(index);
-                }
-              }}>
-            </SelectionBox>
-          </Layer>;
-        })}
+        <Layer>
+          {regions.map((region, index) => {
+            const initialBox = regionToSelectionBox(region, index);
+            return <Group key={index}>
+              <SelectionBox
+                box={initialBox}
+                activeBoxIndex={activeBoxIndex}
+                onTransform={(newProps: SelectionBox) => {
+                  const newBoxes = selectionBoxes.slice();
+                  newBoxes[index] = newProps;
+                  setSelectionBoxes(newBoxes);
+                }}
+                onClick={() => {
+                  if (activeBoxIndex === index) {
+                    setActiveBoxIndex(-1);
+                  } else {
+                    setActiveBoxIndex(index);
+                  }
+                }}>
+              </SelectionBox>
+            </Group>;
+          })}
+        </Layer>
       </Stage>
     </>
   );
