@@ -1,22 +1,24 @@
 import { useRef, useState } from 'react';
-import { Stage, Layer, Text } from 'react-konva';
-// import SampleData from '../../sample_data';
+import { Stage, Layer } from 'react-konva';
 
 import SelectionBox from './SelectionBox';
 import Konva from 'konva';
+import { IOmostRegion } from '../../omost_region';
 
-const initialBox = {
-  x: 100,
-  y: 100,
-  width: 256,
-  height: 256,
-};
+interface CanvasProps { width: number, height: number, regions: IOmostRegion[] }
 
+function regionToSelectionBox(region: IOmostRegion): SelectionBox {
+  const [a, b, c, d] = region.rect.map(v => v * 2);
+  return {
+    x: c,
+    y: a,
+    width: d - c,
+    height: b - a,
+  };
+}
 
-interface CanvasProps { width: number, height: number }
-
-const Canvas: React.FC<CanvasProps> = ({ width, height }) => {
-  const [selectionBox, setSelectionBox] = useState(initialBox);
+const Canvas: React.FC<CanvasProps> = ({ width, height, regions }) => {
+  const [selectionBoxes, setSelectionBoxes] = useState(regions.map(regionToSelectionBox));
   const stageRef = useRef<Konva.Stage>(null); // Ref to access the Konva Stage
 
   return (
@@ -26,19 +28,19 @@ const Canvas: React.FC<CanvasProps> = ({ width, height }) => {
         width={width}
         height={height}
       >
-        <Layer>
-          <Text
-            x={selectionBox.x}
-            y={selectionBox.y - 20}
-            text={`${Math.abs(selectionBox.width)} x ${Math.abs(selectionBox.height)}`}
-            fontSize={14}
-            fill="black"
-          />
-          <SelectionBox
-            init={initialBox}
-            onTransform={setSelectionBox}>
-          </SelectionBox>
-        </Layer>
+        {regions.map((region, index) => {
+          const initialBox = regionToSelectionBox(region);
+          return <Layer key={index}>
+            <SelectionBox
+              init={initialBox}
+              onTransform={(newProps: SelectionBox) => {
+                const newBoxes = selectionBoxes.slice();
+                newBoxes[index] = newProps;
+                setSelectionBoxes(newBoxes);
+              }}>
+            </SelectionBox>
+          </Layer>;
+        })}
       </Stage>
     </>
   );

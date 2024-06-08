@@ -1,11 +1,11 @@
-export interface SampleData {
+export interface IOmostRegion {
     rect: [number, number, number, number];
     prefixes: string[];
     suffixes: string[];
     color: [number, number, number];
 }
 
-export default [
+export const SAMPLE_REGIONS: IOmostRegion[] = [
     {
         "rect": [
             0,
@@ -170,4 +170,4 @@ export default [
             "High-quality image with detailed textures and natural lighting."
         ]
     }
-] as SampleData[];
+];
