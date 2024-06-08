@@ -8,7 +8,7 @@ import { IOmostRegion } from '../../omost_region';
 interface CanvasProps { width: number, height: number, regions: IOmostRegion[] }
 
 function regionToSelectionBox(region: IOmostRegion, index: number): SelectionBox {
-  const [a, b, c, d] = region.rect.map(v => v * 2);
+  const [a, b, c, d] = region.rect.map(v => v * 5);
   return {
     index: index,
     x: c,
