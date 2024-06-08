@@ -1,3 +1,10 @@
+export interface SampleData {
+    rect: [number, number, number, number];
+    prefixes: string[];
+    suffixes: string[];
+    color: [number, number, number];
+}
+
 export default [
     {
         "rect": [
@@ -163,4 +170,4 @@ export default [
             "High-quality image with detailed textures and natural lighting."
         ]
     }
-]
+] as SampleData[];
