@@ -1,9 +1,8 @@
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { Stage, Layer, Text } from 'react-konva';
 
 import SelectionBox from './SelectionBox';
 import Konva from 'konva';
-import { Vector2d } from 'konva/lib/types';
 
 const initialBox = {
   x: 100,
