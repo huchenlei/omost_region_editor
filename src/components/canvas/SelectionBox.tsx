@@ -5,6 +5,7 @@ import { Box } from "konva/lib/shapes/Transformer";
 import Konva from "konva";
 
 interface SelectionBox {
+  index: number,
   x: number;
   y: number;
   width: number;
@@ -13,8 +14,10 @@ interface SelectionBox {
 }
 
 interface SelectionBoxProps {
-  init: SelectionBox;
+  box: SelectionBox;
+  activeBoxIndex: number;
   onTransform: (newProps: SelectionBox) => void;
+  onClick: () => void;
 }
 
 const roundToNearest = (num: number, mod: number) => Math.round(num / mod) * mod;
@@ -23,21 +26,18 @@ const clamp = (value: number, min: number, max: number): number => {
 };
 const dimConstraint = (num: number): number => clamp(roundToNearest(num, 64), 256, 1024);
 
-const SelectionBox: React.FC<SelectionBoxProps> = ({ init, onTransform }) => {
+const SelectionBox: React.FC<SelectionBoxProps> = ({ box, activeBoxIndex, onTransform, onClick }) => {
   // Enable group-drag only when user interact with the selection box.
   const [isGroupDraggable, setIsGroupDraggable] = useState(false);
-  const [isSelected, setIsSelected] = useState(false);
   const rectRef = useRef<Konva.Rect>(null);
   const trRef = useRef<Konva.Transformer>(null);
 
-  useEffect(() => {
-    // Check if the transformer ref and the rect ref are defined
-    if (isSelected && trRef.current && rectRef.current) {
-      // Attach the transformer to the rect
-      trRef.current.nodes([rectRef.current]);
-      trRef.current.getLayer()?.batchDraw();
-    }
-  }, [isSelected]);
+  const isActive = activeBoxIndex === box.index;
+  if (isActive && rectRef.current && trRef.current) {
+    // Attach the transformer to the rect
+    trRef.current.nodes([rectRef.current]);
+    trRef.current.getLayer()?.batchDraw();
+  }
 
   const boundBoxFunc = (oldBox: Box, newBox: Box): Box => {
     const adjustedWidth = dimConstraint(newBox.width);
@@ -58,13 +58,13 @@ const SelectionBox: React.FC<SelectionBoxProps> = ({ init, onTransform }) => {
     };
   };
 
-  const initialStrokeWidth = 2;
+  const boxialStrokeWidth = 2;
   const handleTransform = () => {
     const node = rectRef.current;
     if (node) {
       const scaleX = node.scaleX();
       const scaleY = node.scaleY();
-      node.strokeWidth(initialStrokeWidth / Math.max(scaleX, scaleY));
+      node.strokeWidth(boxialStrokeWidth / Math.max(scaleX, scaleY));
       const scaledWidth = node.width() * scaleX;
       const scaledHeight = node.height() * scaleY;
       node.scaleX(1);
@@ -74,11 +74,11 @@ const SelectionBox: React.FC<SelectionBoxProps> = ({ init, onTransform }) => {
 
       const pos = node.getPosition();
       onTransform({
+        ...box,
         x: Math.round(pos.x),
         y: Math.round(pos.y),
         width: Math.round(node.width()),
         height: Math.round(node.height()),
-        color: init.color,
       });
       node.getLayer()?.batchDraw();
     }
@@ -105,32 +105,32 @@ const SelectionBox: React.FC<SelectionBoxProps> = ({ init, onTransform }) => {
     const node = rectRef.current;
     if (!node) return;
     onTransform({
+      ...box,
       x: Math.round(pos.x),
       y: Math.round(pos.y),
       height: node.height(),
       width: node.width(),
-      color: init.color,
     });
   };
 
   return <>
     <Rect
       ref={rectRef}
-      x={init.x}
-      y={init.y}
-      width={init.width}
-      height={init.height}
-      stroke="black"
-      fill={`rgb(${init.color.join(',')})`}
-      strokeWidth={2}
+      x={box.x}
+      y={box.y}
+      width={box.width}
+      height={box.height}
+      stroke={isActive ? "black" : "transparent"}
+      fill={`rgb(${box.color.join(',')})`}
+      strokeWidth={1}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      onClick={() => setIsSelected(!isSelected)}
+      onClick={onClick}
       onTransform={handleTransform}
       draggable={isGroupDraggable}
       onDragMove={handleGroupDragMove}
     />
-    {isSelected && (
+    {isActive && (
       <Transformer
         ref={trRef}
         attachedTo={rectRef}

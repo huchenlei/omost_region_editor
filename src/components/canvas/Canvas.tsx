@@ -7,9 +7,10 @@ import { IOmostRegion } from '../../omost_region';
 
 interface CanvasProps { width: number, height: number, regions: IOmostRegion[] }
 
-function regionToSelectionBox(region: IOmostRegion): SelectionBox {
+function regionToSelectionBox(region: IOmostRegion, index: number): SelectionBox {
   const [a, b, c, d] = region.rect.map(v => v * 2);
   return {
+    index: index,
     x: c,
     y: a,
     width: d - c,
@@ -20,6 +21,8 @@ function regionToSelectionBox(region: IOmostRegion): SelectionBox {
 
 const Canvas: React.FC<CanvasProps> = ({ width, height, regions }) => {
   const [selectionBoxes, setSelectionBoxes] = useState(regions.map(regionToSelectionBox));
+  const [activeBoxIndex, setActiveBoxIndex] = useState<number>(-1); // Index of the active selection box [-1 if none
+
   const stageRef = useRef<Konva.Stage>(null); // Ref to access the Konva Stage
 
   return (
@@ -30,14 +33,22 @@ const Canvas: React.FC<CanvasProps> = ({ width, height, regions }) => {
         height={height}
       >
         {regions.map((region, index) => {
-          const initialBox = regionToSelectionBox(region);
+          const initialBox = regionToSelectionBox(region, index);
           return <Layer key={index}>
             <SelectionBox
-              init={initialBox}
+              box={initialBox}
+              activeBoxIndex={activeBoxIndex}
               onTransform={(newProps: SelectionBox) => {
                 const newBoxes = selectionBoxes.slice();
                 newBoxes[index] = newProps;
                 setSelectionBoxes(newBoxes);
+              }}
+              onClick={() => {
+                if (activeBoxIndex === index) {
+                  setActiveBoxIndex(-1);
+                } else {
+                  setActiveBoxIndex(index);
+                }
               }}>
             </SelectionBox>
           </Layer>;
