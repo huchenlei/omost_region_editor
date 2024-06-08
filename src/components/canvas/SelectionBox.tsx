@@ -1,5 +1,5 @@
 import { KonvaEventObject } from "konva/lib/Node";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { Rect, Transformer } from "react-konva";
 import { Box } from "konva/lib/shapes/Transformer";
 import Konva from "konva";
@@ -16,6 +16,11 @@ interface SelectionBox {
 interface SelectionBoxProps {
   box: SelectionBox;
   activeBoxIndex: number;
+
+  // Unit length of the grid
+  xUnit: number;
+  yUnit: number;
+
   onTransform: (newProps: SelectionBox) => void;
   onClick: () => void;
 }
@@ -24,9 +29,11 @@ const roundToNearest = (num: number, mod: number) => Math.round(num / mod) * mod
 const clamp = (value: number, min: number, max: number): number => {
   return Math.max(min, Math.min(value, max));
 };
-const dimConstraint = (num: number): number => clamp(roundToNearest(num, 64), 256, 1024);
 
-const SelectionBox: React.FC<SelectionBoxProps> = ({ box, activeBoxIndex, onTransform, onClick }) => {
+const SelectionBox: React.FC<SelectionBoxProps> = ({ box, activeBoxIndex, xUnit, yUnit, onTransform, onClick }) => {
+  const xConstraint = (num: number): number => clamp(roundToNearest(num, xUnit), xUnit, 18 * xUnit);
+  const yConstraint = (num: number): number => clamp(roundToNearest(num, yUnit), yUnit, 18 * yUnit);
+
   // Enable group-drag only when user interact with the selection box.
   const [isGroupDraggable, setIsGroupDraggable] = useState(false);
   const rectRef = useRef<Konva.Rect>(null);
@@ -40,21 +47,28 @@ const SelectionBox: React.FC<SelectionBoxProps> = ({ box, activeBoxIndex, onTran
   }
 
   const boundBoxFunc = (oldBox: Box, newBox: Box): Box => {
-    const adjustedWidth = dimConstraint(newBox.width);
-    const adjustedHeight = dimConstraint(newBox.height);
-    const dw = adjustedWidth - newBox.width;
-    const dh = adjustedHeight - newBox.height;
-    const dx = newBox.x - oldBox.x;
-    const dy = newBox.y - oldBox.y;
-
-    const newX = newBox.x - (dx !== 0 ? dw : 0);
-    const newY = newBox.y - (dy !== 0 ? dh : 0);
     return {
-      x: newX,
-      y: newY,
-      width: adjustedWidth,
-      height: adjustedHeight,
+      x: xConstraint(newBox.x),
+      y: yConstraint(newBox.y),
+      width: xConstraint(newBox.width),
+      height: yConstraint(newBox.height),
       rotation: newBox.rotation,
+    };
+  };
+
+  const dragBoundFunc = (pos: Konva.Vector2d): Konva.Vector2d => {
+    // pos contains the position the node is being dragged to
+    // Get the stage dimensions
+    const stageWidth = 18 * xUnit;
+    const stageHeight = 18 * yUnit;
+
+    // Get the shape dimensions
+    const shapeWidth = box.width;
+    const shapeHeight = box.height;
+
+    return {
+      x: roundToNearest(clamp(pos.x, 0, stageWidth - shapeWidth), xUnit),
+      y: roundToNearest(clamp(pos.y, 0, stageHeight - shapeHeight), yUnit),
     };
   };
 
@@ -128,6 +142,7 @@ const SelectionBox: React.FC<SelectionBoxProps> = ({ box, activeBoxIndex, onTran
       onClick={onClick}
       onTransform={handleTransform}
       draggable={isGroupDraggable}
+      dragBoundFunc={dragBoundFunc}
       onDragMove={handleGroupDragMove}
     />
     {isActive && (

@@ -7,7 +7,7 @@ function App() {
   const [regions, setRegions] = useState<IOmostRegion[]>(SAMPLE_REGIONS);
   return (
     <>
-      <Canvas width={512} height={512} regions={regions}></Canvas>
+      <Canvas width={540} height={540} regions={regions}></Canvas>
     </>
   )
 }

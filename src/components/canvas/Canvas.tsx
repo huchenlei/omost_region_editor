@@ -7,19 +7,24 @@ import { IOmostRegion } from '../../omost_region';
 
 interface CanvasProps { width: number, height: number, regions: IOmostRegion[] }
 
-function regionToSelectionBox(region: IOmostRegion, index: number): SelectionBox {
-  const [a, b, c, d] = region.rect.map(v => v * 5);
-  return {
-    index: index,
-    x: c,
-    y: a,
-    width: d - c,
-    height: b - a,
-    color: region.color,
-  };
-}
-
 const Canvas: React.FC<CanvasProps> = ({ width, height, regions }) => {
+  const xRatio = Math.floor(width / 90);
+  const yRatio = Math.floor(height / 90);
+  const xUnit = 5 * xRatio;
+  const yUnit = 5 * yRatio;
+
+  function regionToSelectionBox(region: IOmostRegion, index: number): SelectionBox {
+    const [a, b, c, d] = region.rect;
+    return {
+      index: index,
+      x: c * xRatio,
+      y: a * yRatio,
+      width: (d - c) * xRatio,
+      height: (b - a) * yRatio,
+      color: region.color,
+    };
+  }
+
   const [selectionBoxes, setSelectionBoxes] = useState(regions.map(regionToSelectionBox));
   const [activeBoxIndex, setActiveBoxIndex] = useState<number>(-1); // Index of the active selection box [-1 if none
 
@@ -39,6 +44,8 @@ const Canvas: React.FC<CanvasProps> = ({ width, height, regions }) => {
               <SelectionBox
                 box={initialBox}
                 activeBoxIndex={activeBoxIndex}
+                xUnit={xUnit}
+                yUnit={yUnit}
                 onTransform={(newProps: SelectionBox) => {
                   const newBoxes = selectionBoxes.slice();
                   newBoxes[index] = newProps;
