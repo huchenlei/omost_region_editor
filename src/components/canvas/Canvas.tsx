@@ -14,6 +14,7 @@ function regionToSelectionBox(region: IOmostRegion): SelectionBox {
     y: a,
     width: d - c,
     height: b - a,
+    color: region.color,
   };
 }
 

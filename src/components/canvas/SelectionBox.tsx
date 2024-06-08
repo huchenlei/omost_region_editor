@@ -9,6 +9,7 @@ interface SelectionBox {
   y: number;
   width: number;
   height: number;
+  color: [number, number, number];
 }
 
 interface SelectionBoxProps {
@@ -77,6 +78,7 @@ const SelectionBox: React.FC<SelectionBoxProps> = ({ init, onTransform }) => {
         y: Math.round(pos.y),
         width: Math.round(node.width()),
         height: Math.round(node.height()),
+        color: init.color,
       });
       node.getLayer()?.batchDraw();
     }
@@ -107,6 +109,7 @@ const SelectionBox: React.FC<SelectionBoxProps> = ({ init, onTransform }) => {
       y: Math.round(pos.y),
       height: node.height(),
       width: node.width(),
+      color: init.color,
     });
   };
 
@@ -118,6 +121,7 @@ const SelectionBox: React.FC<SelectionBoxProps> = ({ init, onTransform }) => {
       width={init.width}
       height={init.height}
       stroke="black"
+      fill={`rgb(${init.color.join(',')})`}
       strokeWidth={2}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
