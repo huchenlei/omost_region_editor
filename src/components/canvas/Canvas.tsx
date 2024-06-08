@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
 import { Stage, Layer, Text } from 'react-konva';
+// import SampleData from '../../sample_data';
 
 import SelectionBox from './SelectionBox';
 import Konva from 'konva';
@@ -11,7 +12,10 @@ const initialBox = {
   height: 256,
 };
 
-const Canvas = () => {
+
+interface CanvasProps { width: number, height: number }
+
+const Canvas: React.FC<CanvasProps> = ({ width, height }) => {
   const [selectionBox, setSelectionBox] = useState(initialBox);
   const stageRef = useRef<Konva.Stage>(null); // Ref to access the Konva Stage
 
@@ -19,8 +23,8 @@ const Canvas = () => {
     <>
       <Stage
         ref={stageRef}
-        width={window.innerWidth}
-        height={window.innerHeight}
+        width={width}
+        height={height}
       >
         <Layer>
           <Text

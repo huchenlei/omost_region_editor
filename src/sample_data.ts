@@ -1,4 +1,4 @@
-[
+export default [
     {
         "rect": [
             0,
