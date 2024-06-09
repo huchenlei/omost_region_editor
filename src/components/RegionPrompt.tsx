@@ -1,7 +1,8 @@
 import React from 'react';
 import { IOmostRegion } from '../omost_region';
-import { Collapse, List, Input } from 'antd';
+import { Collapse, List, Input, ColorPicker } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
+import { ColorFactory } from 'antd/es/color-picker/color';
 
 interface RegionPromptProps {
   regions: IOmostRegion[];
@@ -20,6 +21,13 @@ const RegionPrompt: React.FC<RegionPromptProps> = ({
     setRegions(newRegions);
   };
 
+  const updateRegionColor = (index: number, color: ColorFactory) => {
+    const newRegions = regions.slice();
+    const rgb = color.toRgb();
+    newRegions[index].color = [rgb.r, rgb.g, rgb.b];
+    setRegions(newRegions);
+  };
+
   const removeSuffix = (regionIndex: number, suffixIndex: number) => {
     const newRegions = regions.slice();
     newRegions[regionIndex].suffixes.splice(suffixIndex, 1);
@@ -35,20 +43,19 @@ const RegionPrompt: React.FC<RegionPromptProps> = ({
   const makeHeader = (region: IOmostRegion, index: number) => {
     const deleteButton = index === 0 ?
       <></> :
-      <DeleteOutlined style={{ float: 'right' }} onClick={() => removeRegion(index)} />;
+      <DeleteOutlined style={{ marginLeft: "auto" }} onClick={() => removeRegion(index)} />;
 
-    return <>
-      <div style={{
-        display: 'inline-block',
-        width: '20px',
-        height: '20px',
-        backgroundColor: `rgb(${region.color.join(",")})`,
-        marginRight: '10px',
-        border: '1px solid black',
-      }}></div>
-      {region.prefixes[region.prefixes.length - 1]}
+    return <div style={{ display: "flex", alignItems: "center" }}>
+      <div onClick={(e) => e.stopPropagation()} style={{ display: "inline-block" }}>
+        <ColorPicker
+          format={"rgb"}
+          value={`rgb(${region.color.join(",")})`}
+          onChange={(color) => { updateRegionColor(index, color as ColorFactory) }}
+        />
+      </div>
+      <div style={{ paddingLeft: "10px" }}>{region.prefixes[region.prefixes.length - 1]}</div>
       {deleteButton}
-    </>;
+    </div>;
   };
 
   const onCollapseChange = (key: string | string[]) => {
