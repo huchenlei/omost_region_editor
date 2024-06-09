@@ -47,7 +47,7 @@ const SelectionBox: React.FC<SelectionBoxProps> = ({ box, activeBoxIndex, xUnit,
     trRef.current.getLayer()?.batchDraw();
   }
 
-  const boundBoxFunc = (oldBox: Box, newBox: Box): Box => {
+  const boundBoxFunc = (_: Box, newBox: Box): Box => {
     return {
       x: xConstraint(newBox.x),
       y: yConstraint(newBox.y),
