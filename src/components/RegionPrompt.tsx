@@ -1,16 +1,22 @@
 import React from 'react';
 import { IOmostRegion } from '../omost_region';
 import { Collapse, List } from 'antd';
+import { DeleteOutlined } from '@ant-design/icons';
 
 interface RegionPromptProps {
   regions: IOmostRegion[];
+  removeRegion: (index: number) => void;
 
   activeRegionIndex: number;
   setActiveRegionIndex: (index: number) => void;
 }
 
 const RegionPrompt: React.FC<RegionPromptProps> = (props) => {
-  const makeHeader = (region: IOmostRegion) => {
+  const makeHeader = (region: IOmostRegion, index: number) => {
+    const deleteButton = index === 0 ?
+      <></> :
+      <DeleteOutlined style={{ float: 'right' }} onClick={() => props.removeRegion(index)} />;
+
     return <>
       <div style={{
         display: 'inline-block',
@@ -21,6 +27,7 @@ const RegionPrompt: React.FC<RegionPromptProps> = (props) => {
         border: '1px solid black',
       }}></div>
       {region.prefixes[region.prefixes.length - 1]}
+      {deleteButton}
     </>;
   };
 
@@ -39,7 +46,7 @@ const RegionPrompt: React.FC<RegionPromptProps> = (props) => {
         props.regions.map((region, index) => {
           return <Collapse.Panel
             key={index}
-            header={makeHeader(region)}>
+            header={makeHeader(region, index)}>
             <List>
               {
                 region.suffixes.map((suffix, index) => {
