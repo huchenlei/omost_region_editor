@@ -40,7 +40,7 @@ jobs:
       - name: Build
         run: npm run build
         env:
-          GITHUB_PAGES_PATH: '/omost-region-editor/'
+          GITHUB_PAGES_PATH: '/omost_region_editor/'
       - name: Setup Pages
         uses: actions/configure-pages@v3
       - name: Upload artifact
