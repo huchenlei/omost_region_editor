@@ -18,7 +18,8 @@ const RegionPrompt: React.FC<RegionPromptProps> = (props) => {
         width: '20px',
         height: '20px',
         backgroundColor: `rgb(${region.color.join(",")})`,
-        marginRight: '10px'
+        marginRight: '10px',
+        border: '1px solid black',
       }}></div>
       {region.prefixes[region.prefixes.length - 1]}
     </>;
