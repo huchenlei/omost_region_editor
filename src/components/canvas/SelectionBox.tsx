@@ -40,6 +40,7 @@ const SelectionBox: React.FC<SelectionBoxProps> = ({ box, activeBoxIndex, xUnit,
   const trRef = useRef<Konva.Transformer>(null);
 
   const isActive = activeBoxIndex === box.index;
+  const noActive = activeBoxIndex === -1;
   if (isActive && rectRef.current && trRef.current) {
     // Attach the transformer to the rect
     trRef.current.nodes([rectRef.current]);
@@ -136,6 +137,7 @@ const SelectionBox: React.FC<SelectionBoxProps> = ({ box, activeBoxIndex, xUnit,
       height={box.height}
       stroke={isActive ? "black" : "transparent"}
       fill={`rgb(${box.color.join(',')})`}
+      opacity={isActive || noActive ? 1 : 0.5}
       strokeWidth={1}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
