@@ -51,7 +51,9 @@ function App() {
     window.addEventListener("message", handleMessage);
 
     // Acknowledge the parent window
-    window.parent.postMessage({ type: "ready" } as IOMostEditorOutgoingMessage, "*");
+    if (window.parent !== window.top) {
+      window.parent.postMessage({ type: "ready" } as IOMostEditorOutgoingMessage, "*");
+    }
 
     // Cleanup function
     return () => {
