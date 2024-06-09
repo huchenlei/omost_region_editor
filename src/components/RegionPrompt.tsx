@@ -5,17 +5,31 @@ import { DeleteOutlined } from '@ant-design/icons';
 
 interface RegionPromptProps {
   regions: IOmostRegion[];
-  removeRegion: (index: number) => void;
+  setRegions: (regions: IOmostRegion[]) => void;
 
   activeRegionIndex: number;
   setActiveRegionIndex: (index: number) => void;
 }
 
-const RegionPrompt: React.FC<RegionPromptProps> = (props) => {
+const RegionPrompt: React.FC<RegionPromptProps> = ({
+  regions, setRegions, activeRegionIndex, setActiveRegionIndex
+}) => {
+  const removeRegion = (index: number) => {
+    const newRegions = regions.slice();
+    newRegions.splice(index, 1);
+    setRegions(newRegions);
+  };
+
+  const removeSuffix = (regionIndex: number, suffixIndex: number) => {
+    const newRegions = regions.slice();
+    newRegions[regionIndex].suffixes.splice(suffixIndex, 1);
+    setRegions(newRegions);
+  }
+
   const makeHeader = (region: IOmostRegion, index: number) => {
     const deleteButton = index === 0 ?
       <></> :
-      <DeleteOutlined style={{ float: 'right' }} onClick={() => props.removeRegion(index)} />;
+      <DeleteOutlined style={{ float: 'right' }} onClick={() => removeRegion(index)} />;
 
     return <>
       <div style={{
@@ -33,25 +47,27 @@ const RegionPrompt: React.FC<RegionPromptProps> = (props) => {
 
   const onCollapseChange = (key: string | string[]) => {
     if (key.length === 0) {
-      props.setActiveRegionIndex(-1);
+      setActiveRegionIndex(-1);
       return;
     }
     const index = parseInt(key as string);
-    props.setActiveRegionIndex(index);
+    setActiveRegionIndex(index);
   };
 
   return (
-    <Collapse accordion onChange={onCollapseChange} activeKey={props.activeRegionIndex.toString()}>
+    <Collapse accordion onChange={onCollapseChange} activeKey={activeRegionIndex.toString()}>
       {
-        props.regions.map((region, index) => {
+        regions.map((region, index) => {
           return <Collapse.Panel
             key={index}
             header={makeHeader(region, index)}>
             <List>
               {
-                region.suffixes.map((suffix, index) => {
-                  return <List.Item key={index}>
+                region.suffixes.map((suffix, suffixIndex) => {
+                  return <List.Item key={suffixIndex}>
                     {suffix}
+                    <DeleteOutlined style={{ float: "right" }}
+                      onClick={() => removeSuffix(index, suffixIndex)} />
                   </List.Item>
                 })
               }

@@ -61,19 +61,13 @@ function App() {
     };
   }, []);
 
-  const removeRegion = (index: number) => {
-    const newRegions = regions.slice();
-    newRegions.splice(index, 1);
-    setRegions(newRegions);
-  };
-
   return (
     <>
       <Row id="editor-root">
         <Col span={12}>
           <RegionPrompt
             regions={regions}
-            removeRegion={removeRegion}
+            setRegions={setRegions}
             activeRegionIndex={activeRegionIndex}
             setActiveRegionIndex={setActiveRegionIndex}
           ></RegionPrompt>
