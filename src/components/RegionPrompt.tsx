@@ -4,52 +4,52 @@ import { Collapse, List } from 'antd';
 import CollapsePanel from 'antd/es/collapse/CollapsePanel';
 
 interface RegionPromptProps {
-    regions: IOmostRegion[];
+  regions: IOmostRegion[];
 
-    activeRegionIndex: number;
-    setActiveRegionIndex: (index: number) => void;
+  activeRegionIndex: number;
+  setActiveRegionIndex: (index: number) => void;
 }
 
 const RegionPrompt: React.FC<RegionPromptProps> = (props) => {
-    const makeHeader = (region: IOmostRegion) => {
-        return <>
-            <div style={{
-                display: 'inline-block',
-                width: '20px',
-                height: '20px',
-                backgroundColor: `rgb(${region.color.join(",")})`,
-                marginRight: '10px'
-            }}></div>
-            {region.prefixes[region.prefixes.length - 1]}
-        </>;
-    };
+  const makeHeader = (region: IOmostRegion) => {
+    return <>
+      <div style={{
+        display: 'inline-block',
+        width: '20px',
+        height: '20px',
+        backgroundColor: `rgb(${region.color.join(",")})`,
+        marginRight: '10px'
+      }}></div>
+      {region.prefixes[region.prefixes.length - 1]}
+    </>;
+  };
 
-    const onCollapseChange = (key: string | string[]) => {
-        const index = parseInt(key as string);
-        props.setActiveRegionIndex(index);
-    };
+  const onCollapseChange = (key: string | string[]) => {
+    const index = parseInt(key as string);
+    props.setActiveRegionIndex(index);
+  };
 
-    return (
-        <Collapse accordion onChange={onCollapseChange} activeKey={props.activeRegionIndex.toString()}>
-            {
-                props.regions.map((region, index) => {
-                    return <CollapsePanel
-                        key={index}
-                        header={makeHeader(region)}>
-                        <List>
-                            {
-                                region.suffixes.map((suffix, index) => {
-                                    return <List.Item key={index}>
-                                        {suffix}
-                                    </List.Item>
-                                })
-                            }
-                        </List>
-                    </CollapsePanel>
+  return (
+    <Collapse accordion onChange={onCollapseChange} activeKey={props.activeRegionIndex.toString()}>
+      {
+        props.regions.map((region, index) => {
+          return <CollapsePanel
+            key={index}
+            header={makeHeader(region)}>
+            <List>
+              {
+                region.suffixes.map((suffix, index) => {
+                  return <List.Item key={index}>
+                    {suffix}
+                  </List.Item>
                 })
-            }
-        </Collapse>
-    );
+              }
+            </List>
+          </CollapsePanel>
+        })
+      }
+    </Collapse>
+  );
 };
 
 export default RegionPrompt;
