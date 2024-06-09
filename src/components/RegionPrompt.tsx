@@ -1,7 +1,7 @@
 import React from 'react';
 import { IOmostRegion } from '../omost_region';
 import { Collapse, List, Input, ColorPicker } from 'antd';
-import { DeleteOutlined } from '@ant-design/icons';
+import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import { ColorFactory } from 'antd/es/color-picker/color';
 
 interface RegionPromptProps {
@@ -28,6 +28,12 @@ const RegionPrompt: React.FC<RegionPromptProps> = ({
     setRegions(newRegions);
   };
 
+  const addSuffix = (regionIndex: number) => {
+    const newRegions = regions.slice();
+    newRegions[regionIndex].suffixes.push("");
+    setRegions(newRegions);
+  }
+
   const removeSuffix = (regionIndex: number, suffixIndex: number) => {
     const newRegions = regions.slice();
     newRegions[regionIndex].suffixes.splice(suffixIndex, 1);
@@ -41,9 +47,10 @@ const RegionPrompt: React.FC<RegionPromptProps> = ({
   };
 
   const makeHeader = (region: IOmostRegion, index: number) => {
-    const deleteButton = index === 0 ?
-      <></> :
-      <DeleteOutlined style={{ marginLeft: "auto" }} onClick={() => removeRegion(index)} />;
+    const buttons = <div style={{ marginLeft: "auto" }} onClick={(e) => e.stopPropagation()}>
+      <div hidden={index === 0}><DeleteOutlined onClick={() => removeRegion(index)} /></div>
+      <div hidden={activeRegionIndex !== index}><PlusOutlined onClick={() => addSuffix(index)} /></div>
+    </div>
 
     return <div style={{ display: "flex", alignItems: "center" }}>
       <div onClick={(e) => e.stopPropagation()} style={{ display: "inline-block" }}>
@@ -54,7 +61,7 @@ const RegionPrompt: React.FC<RegionPromptProps> = ({
         />
       </div>
       <div style={{ paddingLeft: "10px" }}>{region.prefixes[region.prefixes.length - 1]}</div>
-      {deleteButton}
+      {buttons}
     </div>;
   };
 
