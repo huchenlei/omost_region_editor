@@ -26,6 +26,10 @@ const RegionPrompt: React.FC<RegionPromptProps> = (props) => {
   };
 
   const onCollapseChange = (key: string | string[]) => {
+    if (key.length === 0) {
+      props.setActiveRegionIndex(-1);
+      return;
+    }
     const index = parseInt(key as string);
     props.setActiveRegionIndex(index);
   };
