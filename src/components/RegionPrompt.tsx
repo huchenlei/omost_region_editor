@@ -3,7 +3,14 @@ import { IOmostRegion } from '../omost_region';
 import { Collapse, List } from 'antd';
 import CollapsePanel from 'antd/es/collapse/CollapsePanel';
 
-const RegionPrompt: React.FC<{ regions: IOmostRegion[] }> = ({ regions }) => {
+interface RegionPromptProps {
+    regions: IOmostRegion[];
+
+    activeRegionIndex: number;
+    setActiveRegionIndex: (index: number) => void;
+}
+
+const RegionPrompt: React.FC<RegionPromptProps> = (props) => {
     const makeHeader = (region: IOmostRegion) => {
         return <>
             <div style={{
@@ -17,10 +24,15 @@ const RegionPrompt: React.FC<{ regions: IOmostRegion[] }> = ({ regions }) => {
         </>;
     };
 
+    const onCollapseChange = (key: string | string[]) => {
+        const index = parseInt(key as string);
+        props.setActiveRegionIndex(index);
+    };
+
     return (
-        <Collapse accordion>
+        <Collapse accordion onChange={onCollapseChange} activeKey={props.activeRegionIndex.toString()}>
             {
-                regions.map((region, index) => {
+                props.regions.map((region, index) => {
                     return <CollapsePanel
                         key={index}
                         header={makeHeader(region)}>

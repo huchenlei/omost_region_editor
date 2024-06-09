@@ -5,11 +5,18 @@ import SelectionBox from './SelectionBox';
 import Konva from 'konva';
 import { IOmostRegion } from '../../omost_region';
 
-interface CanvasProps { width: number, height: number, regions: IOmostRegion[] }
+interface CanvasProps {
+  width: number;
+  height: number;
+  regions: IOmostRegion[];
 
-const Canvas: React.FC<CanvasProps> = ({ width, height, regions }) => {
-  const xRatio = Math.floor(width / 90);
-  const yRatio = Math.floor(height / 90);
+  activeRegionIndex: number;
+  setActiveRegionIndex: (index: number) => void;
+}
+
+const Canvas: React.FC<CanvasProps> = (props) => {
+  const xRatio = Math.floor(props.width / 90);
+  const yRatio = Math.floor(props.height / 90);
   const xUnit = 5 * xRatio;
   const yUnit = 5 * yRatio;
 
@@ -25,8 +32,7 @@ const Canvas: React.FC<CanvasProps> = ({ width, height, regions }) => {
     };
   }
 
-  const [selectionBoxes, setSelectionBoxes] = useState(regions.map(regionToSelectionBox));
-  const [activeBoxIndex, setActiveBoxIndex] = useState<number>(-1); // Index of the active selection box [-1 if none
+  const [selectionBoxes, setSelectionBoxes] = useState(props.regions.map(regionToSelectionBox));
 
   const stageRef = useRef<Konva.Stage>(null); // Ref to access the Konva Stage
 
@@ -34,16 +40,16 @@ const Canvas: React.FC<CanvasProps> = ({ width, height, regions }) => {
     <>
       <Stage
         ref={stageRef}
-        width={width}
-        height={height}
+        width={props.width}
+        height={props.height}
       >
         <Layer>
-          {regions.map((region, index) => {
+          {props.regions.map((region, index) => {
             const initialBox = regionToSelectionBox(region, index);
             return <Group key={index}>
               <SelectionBox
                 box={initialBox}
-                activeBoxIndex={activeBoxIndex}
+                activeBoxIndex={props.activeRegionIndex}
                 xUnit={xUnit}
                 yUnit={yUnit}
                 onTransform={(newProps: SelectionBox) => {
@@ -52,10 +58,10 @@ const Canvas: React.FC<CanvasProps> = ({ width, height, regions }) => {
                   setSelectionBoxes(newBoxes);
                 }}
                 onClick={() => {
-                  if (activeBoxIndex === index) {
-                    setActiveBoxIndex(-1);
+                  if (props.activeRegionIndex === index) {
+                    props.setActiveRegionIndex(-1);
                   } else {
-                    setActiveBoxIndex(index);
+                    props.setActiveRegionIndex(index);
                   }
                 }}>
               </SelectionBox>
