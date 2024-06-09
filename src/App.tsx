@@ -5,8 +5,13 @@ import { IOmostRegion, SAMPLE_REGIONS } from './omost_region';
 import { Row, Col } from 'antd';
 import RegionPrompt from './components/RegionPrompt';
 
-interface IOmostEditorMessage {
+interface IOmostEditorIncomingMessage {
   type: "update" | "save";
+  regions?: IOmostRegion[];
+}
+
+interface IOMostEditorOutgoingMessage {
+  type: "ready" | "save";
   regions?: IOmostRegion[];
 }
 
@@ -26,17 +31,17 @@ function App() {
       }
 
       // Decode the message
-      const message: IOmostEditorMessage = JSON.parse(event.data);
+      const message: IOmostEditorIncomingMessage = event.data;
 
       if (message.type === "update") {
         // Update the regions state
         setRegions(message.regions!);
       } else if (message.type === "save") {
         // Save the regions to the parent window
-        window.parent.postMessage(JSON.stringify({
+        window.parent.postMessage({
           type: "save",
           regions: latestRegions.current,
-        }), "*");
+        } as IOMostEditorOutgoingMessage, "*");
       } else {
         console.error("Invalid message type: ", message.type);
       }
@@ -44,6 +49,9 @@ function App() {
 
     // Add event listener
     window.addEventListener("message", handleMessage);
+
+    // Acknowledge the parent window
+    window.parent.postMessage({ type: "ready" } as IOMostEditorOutgoingMessage, "*");
 
     // Cleanup function
     return () => {
@@ -68,6 +76,7 @@ function App() {
             regions={regions}
             activeRegionIndex={activeRegionIndex}
             setActiveRegionIndex={setActiveRegionIndex}
+            setRegions={setRegions}
           ></Canvas>
         </Col>
       </Row>

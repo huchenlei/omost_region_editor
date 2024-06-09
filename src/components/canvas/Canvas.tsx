@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 import { Group, Layer, Stage } from 'react-konva';
 
 import SelectionBox from './SelectionBox';
@@ -9,6 +9,7 @@ interface CanvasProps {
   width: number;
   height: number;
   regions: IOmostRegion[];
+  setRegions: (regions: IOmostRegion[]) => void;
 
   activeRegionIndex: number;
   setActiveRegionIndex: (index: number) => void;
@@ -32,7 +33,28 @@ const Canvas: React.FC<CanvasProps> = (props) => {
     };
   }
 
-  const [selectionBoxes, setSelectionBoxes] = useState(props.regions.map(regionToSelectionBox));
+  const selectionBoxes = props.regions.map(regionToSelectionBox);
+
+  const setSelectionBoxes = (newBoxes: SelectionBox[]) => {
+    const newRegions = newBoxes.map((box, index) => {
+      const region = props.regions[index];
+      return {
+        ...region,
+        rect: [
+          box.y / yRatio,
+          (box.y + box.height) / yRatio,
+          box.x / xRatio,
+          (box.x + box.width) / xRatio],
+      };
+    }) as IOmostRegion[];
+    props.setRegions(newRegions);
+  };
+
+  const setSelectionBox = (index: number, newBox: SelectionBox) => {
+    const newBoxes = selectionBoxes.slice();
+    newBoxes[index] = newBox;
+    setSelectionBoxes(newBoxes);
+  };
 
   const stageRef = useRef<Konva.Stage>(null); // Ref to access the Konva Stage
 
@@ -53,9 +75,7 @@ const Canvas: React.FC<CanvasProps> = (props) => {
                 xUnit={xUnit}
                 yUnit={yUnit}
                 onTransform={(newProps: SelectionBox) => {
-                  const newBoxes = selectionBoxes.slice();
-                  newBoxes[index] = newProps;
-                  setSelectionBoxes(newBoxes);
+                  setSelectionBox(index, newProps);
                 }}
                 onClick={() => {
                   if (props.activeRegionIndex === index) {
