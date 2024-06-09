@@ -3,6 +3,6 @@ import react from '@vitejs/plugin-react'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  base: process.env.GITHUB_PAGES_PATH,
+  base: "/omost_region_editor/",
   plugins: [react()],
 })
