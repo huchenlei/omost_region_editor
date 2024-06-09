@@ -1,6 +1,6 @@
 import React from 'react';
 import { IOmostRegion } from '../omost_region';
-import { Collapse, List } from 'antd';
+import { Collapse, List, Input } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
 
 interface RegionPromptProps {
@@ -24,7 +24,13 @@ const RegionPrompt: React.FC<RegionPromptProps> = ({
     const newRegions = regions.slice();
     newRegions[regionIndex].suffixes.splice(suffixIndex, 1);
     setRegions(newRegions);
-  }
+  };
+
+  const changeSuffix = (regionIndex: number, suffixIndex: number, value: React.ChangeEvent<HTMLInputElement>) => {
+    const newRegions = regions.slice();
+    newRegions[regionIndex].suffixes[suffixIndex] = value.target.value;
+    setRegions(newRegions);
+  };
 
   const makeHeader = (region: IOmostRegion, index: number) => {
     const deleteButton = index === 0 ?
@@ -61,12 +67,12 @@ const RegionPrompt: React.FC<RegionPromptProps> = ({
           return <Collapse.Panel
             key={index}
             header={makeHeader(region, index)}>
-            <List>
+            <List size='small'>
               {
                 region.suffixes.map((suffix, suffixIndex) => {
                   return <List.Item key={suffixIndex}>
-                    {suffix}
-                    <DeleteOutlined style={{ float: "right" }}
+                    <Input value={suffix} onChange={(value) => changeSuffix(index, suffixIndex, value)} />
+                    <DeleteOutlined style={{ float: "right", paddingLeft: "10px" }}
                       onClick={() => removeSuffix(index, suffixIndex)} />
                   </List.Item>
                 })
