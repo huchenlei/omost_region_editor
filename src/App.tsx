@@ -64,7 +64,7 @@ function App() {
   return (
     <>
       <Row id="editor-root">
-        <Col span={12}>
+        <Col span={12} style={{padding: "10px"}}>
           <RegionPrompt
             regions={regions}
             setRegions={setRegions}
@@ -72,7 +72,7 @@ function App() {
             setActiveRegionIndex={setActiveRegionIndex}
           ></RegionPrompt>
         </Col>
-        <Col span={12}>
+        <Col span={12} style={{padding: "10px"}}>
           <Canvas
             width={540}
             height={540}
