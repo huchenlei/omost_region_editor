@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import './App.css'
 import Canvas from './components/canvas/Canvas'
 import { IOmostRegion, SAMPLE_REGIONS } from './omost_region';
@@ -13,6 +13,11 @@ interface IOmostEditorMessage {
 function App() {
   const [regions, setRegions] = useState<IOmostRegion[]>(SAMPLE_REGIONS);
   const [activeRegionIndex, setActiveRegionIndex] = useState<number>(-1); // Index of the active selection box [-1 if none
+  const latestRegions = useRef<IOmostRegion[]>(regions);
+
+  useEffect(() => {
+    latestRegions.current = regions;
+  }, [regions]);
 
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
@@ -30,7 +35,7 @@ function App() {
         // Save the regions to the parent window
         window.parent.postMessage(JSON.stringify({
           type: "save",
-          regions: regions,
+          regions: latestRegions.current,
         }), "*");
       } else {
         console.error("Invalid message type: ", message.type);
@@ -44,7 +49,7 @@ function App() {
     return () => {
       window.removeEventListener("message", handleMessage);
     };
-  }, [regions]);
+  }, []);
 
   return (
     <>
