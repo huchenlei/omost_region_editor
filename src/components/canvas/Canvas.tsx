@@ -44,7 +44,8 @@ const Canvas: React.FC<CanvasProps> = (props) => {
           box.y / yRatio,
           (box.y + box.height) / yRatio,
           box.x / xRatio,
-          (box.x + box.width) / xRatio],
+          (box.x + box.width) / xRatio
+        ].map(Math.round)
       };
     }) as IOmostRegion[];
     props.setRegions(newRegions);
