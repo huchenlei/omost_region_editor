@@ -154,9 +154,6 @@ const SelectionBox: React.FC<SelectionBoxProps> = ({ box, activeBoxIndex, xUnit,
         boundBoxFunc={boundBoxFunc}
         // Specify only the corners to have control points
         enabledAnchors={[
-          'top-left',
-          'top-right',
-          'bottom-left',
           'bottom-right',
         ]}
         rotateEnabled={false}
